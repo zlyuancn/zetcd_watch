@@ -29,6 +29,8 @@ type Watcher struct {
     manager *Manager
     done    chan struct{}
     run     int32
+    // 记录版本
+    record_ver map[string]int64
 }
 
 func newWatcher(manager *Manager) *Watcher {
@@ -42,7 +44,7 @@ func newWatcher(manager *Manager) *Watcher {
 // 开始监视
 // 如果你需要监视一个key前缀, 请设置 clientv3.WithPrefix() 选项
 func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) error {
-    if fn == nil{
+    if fn == nil {
         panic("ObserverFunc is nil")
     }
 
@@ -54,6 +56,7 @@ func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) 
         return WatcherIsRun
     }
 
+    m.record_ver = make(map[string]int64)
     m.manager.startWatcher(m)
 
     m.run = int32(1)
@@ -119,7 +122,11 @@ func (m *Watcher) watch(ctx context.Context, key string, fn ObserverFunc, opts .
             return v.Err()
         }
         for _, e := range v.Events {
-            fn(newData(e))
+            data := newData(e)
+            if data.ModRevision > m.record_ver[data.Key] {
+                m.record_ver[data.Key] = data.ModRevision
+                fn(data)
+            }
         }
     }
     return nil
