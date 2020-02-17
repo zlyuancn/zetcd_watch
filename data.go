@@ -9,8 +9,6 @@
 package zetcd_watch
 
 import (
-    "unsafe"
-
     "github.com/zlyuancn/zstr"
     "go.etcd.io/etcd/clientv3"
 )
@@ -33,8 +31,8 @@ type Data struct {
 func newData(e *clientv3.Event) *Data {
     kv := e.Kv
     m := &Data{
-        String:         zstr.New(*(*string)(unsafe.Pointer(&kv.Value))),
-        Key:            *(*string)(unsafe.Pointer(&kv.Key)),
+        String:         zstr.New(string(kv.Value)),
+        Key:            string(kv.Key),
         Version:        kv.Version,
         CreateRevision: kv.CreateRevision,
         ModRevision:    kv.ModRevision,
