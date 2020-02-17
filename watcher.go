@@ -27,16 +27,28 @@ var WatcherIsRun = errors.New("这个watcher正在运行")
 // 观察者
 type Watcher struct {
     manager *Manager
-    done    chan struct{}
-    run     int32
+    // 完成等待
+    done chan struct{}
+    // 运行标志
+    run int32
     // 记录版本
     record_ver map[string]int64
+
+    // 日志工具
+    log Loger
+    // 官方客户端
+    c *clientv3.Client
+    // 重试等待时间
+    retry_wait_time time.Duration
 }
 
 func newWatcher(manager *Manager) *Watcher {
     w := &Watcher{
-        manager: manager,
-        done:    make(chan struct{}),
+        manager:         manager,
+        done:            make(chan struct{}),
+        log:             manager.log,
+        c:               manager.c,
+        retry_wait_time: manager.retry_wait_time,
     }
     return w
 }
@@ -45,6 +57,7 @@ func newWatcher(manager *Manager) *Watcher {
 // 如果你需要监视一个key前缀, 请设置 clientv3.WithPrefix() 选项
 func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) error {
     if fn == nil {
+        m.log.Warn(fmt.Sprintf("<%s>:ObserverFunc is nil", key))
         panic("ObserverFunc is nil")
     }
 
@@ -57,10 +70,8 @@ func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) 
     }
 
     m.record_ver = make(map[string]int64)
-    m.manager.startWatcher(m)
-
     m.run = int32(1)
-    ctx, cancel := context.WithCancel(m.manager.ctx)
+    ctx, cancel := m.manager.startWatcher(m)
 
     go func() {
         select {
@@ -74,10 +85,10 @@ func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) 
     }()
 
     var err error
-    m.manager.log.Debug(fmt.Sprintf(`监视: "%s"`, key))
+    m.log.Debug(fmt.Sprintf(`监视: "%s"`, key))
     for atomic.LoadInt32(&m.run) == 1 {
         // 强制要求切换token, 如果没有它, 在带认证的etcd服务重启后将会发生invalid token问题
-        _, err = m.manager.c.Get(ctx, "/")
+        _, err = m.c.Get(ctx, "/")
         if err != nil {
             cancel()
             break
@@ -85,17 +96,17 @@ func (m *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) 
 
         err = m.watch(ctx, key, fn, opts...)
         if err != nil {
-            m.manager.log.Warn(fmt.Errorf(`监视错误: "%s": %s`, key, err))
+            m.log.Warn(fmt.Errorf(`监视错误: "%s": %s`, key, err))
         }
 
         if atomic.LoadInt32(&m.run) == 0 {
             break
         }
-        time.Sleep(m.manager.retry_wait_time)
-        m.manager.log.Info(fmt.Sprintf(`重试监视: "%s"`, key))
+        time.Sleep(m.retry_wait_time)
+        m.log.Info(fmt.Sprintf(`重试监视: "%s"`, key))
     }
 
-    m.manager.log.Debug(fmt.Sprintf(`停止监视: "%s"`, key))
+    m.log.Debug(fmt.Sprintf(`停止监视: "%s"`, key))
     m.done <- struct{}{}
 
     m.manager.closeWatcher(m)
@@ -116,7 +127,7 @@ func (m *Watcher) Stop() {
 }
 
 func (m *Watcher) watch(ctx context.Context, key string, fn ObserverFunc, opts ...clientv3.OpOption) error {
-    ch := m.manager.c.Watch(ctx, key, opts...)
+    ch := m.c.Watch(ctx, key, opts...)
     for v := range ch {
         if v.Err() != nil {
             return v.Err()

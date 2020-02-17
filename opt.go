@@ -10,11 +10,13 @@ package zetcd_watch
 
 import (
     "time"
+
+    "github.com/zlyuancn/zlog2"
 )
 
 type Option func(m *Manager)
 
-// 设置重试等待时间
+// 设置监视断开重试等待时间
 func WithRetryWaitTime(t time.Duration) Option {
     return func(m *Manager) {
         if t <= 0 {
@@ -27,6 +29,9 @@ func WithRetryWaitTime(t time.Duration) Option {
 // 自定义日志工具
 func WithLogger(log Loger) Option {
     return func(m *Manager) {
+        if log == nil {
+            log = zlog2.DefaultLogger
+        }
         m.log = log
     }
 }

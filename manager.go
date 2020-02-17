@@ -79,8 +79,9 @@ func (m *Manager) NewWatcher() *Watcher {
 }
 
 // 开启一个watcher, 所有的watcher在开始监视的时候必须调用它
-func (m *Manager) startWatcher(w *Watcher) {
+func (m *Manager) startWatcher(w *Watcher) (context.Context, context.CancelFunc) {
     m.wg.Add(1)
+    return context.WithCancel(m.ctx)
 }
 
 // 关闭一个watcher, 所有的watcher在停止监视的时候必须调用它
