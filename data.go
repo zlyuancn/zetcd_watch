@@ -26,6 +26,8 @@ type Data struct {
     CreateRevision int64
     // 修订版本
     ModRevision int64
+    // 租约id
+    Lease int64
 }
 
 func newData(e *clientv3.Event) *Data {
@@ -36,6 +38,7 @@ func newData(e *clientv3.Event) *Data {
         Version:        kv.Version,
         CreateRevision: kv.CreateRevision,
         ModRevision:    kv.ModRevision,
+        Lease:          kv.Lease,
     }
 
     if e.Type == clientv3.EventTypeDelete {
