@@ -45,7 +45,7 @@ func newWatcher(opts *options) *Watcher {
 // 开始监视
 // 如果你需要监视一个key前缀, 请设置 clientv3.WithPrefix() 选项
 // 如果你想要知道key在改变之前的数据, 请设置 clientv3.WithPrevKV() 选项
-func (w *Watcher) Start(key string, fn ObserverFunc, opts ...clientv3.OpOption) error {
+func (w *Watcher) Watch(key string, fn ObserverFunc, opts ...clientv3.OpOption) error {
 	if fn == nil {
 		panic("ObserverFunc is nil")
 	}
