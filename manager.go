@@ -10,50 +10,37 @@ package zetcd_watch
 
 import (
 	"context"
-	"sync"
 	"sync/atomic"
-	"time"
 
-	"github.com/zlyuancn/zlog"
 	"go.etcd.io/etcd/clientv3"
 )
 
-// 默认重试等待时间
-const DefaultRetryWaitTime = time.Second
-
 type Manager struct {
 	// 最顶级的上下文, 用于通知关闭创建的watcher
-	ctx context.Context
+	baseCtx context.Context
 	// 上下文的关闭函数
-	cancel context.CancelFunc
-	// 用于等待所有watcher结束
-	wg sync.WaitGroup
+	baseCtxCancel context.CancelFunc
 
-	// 官方的etcd客户端
-	c *clientv3.Client
 	// 是否运行中
 	run int32
-	// 重试等待时间
-	retryWaitTime time.Duration
-	// 日志
-	log Loger
+
+	// 选项
+	opts *options
 }
 
 // 创建一个监视管理器
-func New(etcd_client *clientv3.Client, opts ...Option) *Manager {
+func New(etcdClient *clientv3.Client, opts ...Option) *Manager {
 	ctx, cancel := context.WithCancel(context.Background())
 	m := &Manager{
-		ctx:    ctx,
-		cancel: cancel,
+		baseCtx:       ctx,
+		baseCtxCancel: cancel,
 
-		c:             etcd_client,
-		run:           1,
-		retryWaitTime: DefaultRetryWaitTime,
-		log:           zlog.DefaultLogger,
+		run:  1,
+		opts: newOptions(ctx, etcdClient),
 	}
 
 	for _, o := range opts {
-		o(m)
+		o(m.opts)
 	}
 
 	return m
@@ -68,23 +55,12 @@ func (m *Manager) IsRun() bool {
 // 注意, 管理器不会主动关闭etcd客户端
 func (m *Manager) Stop() {
 	if atomic.CompareAndSwapInt32(&m.run, 1, 0) {
-		m.cancel()
-		m.wg.Wait()
+		m.baseCtxCancel()
+		m.opts.wg.Wait()
 	}
 }
 
 // 创建一个Watcher
 func (m *Manager) NewWatcher() *Watcher {
-	return newWatcher(m)
-}
-
-// 开启一个watcher, 所有的watcher在开始监视的时候必须调用它
-func (m *Manager) startWatcher(w *Watcher) (context.Context, context.CancelFunc) {
-	m.wg.Add(1)
-	return context.WithCancel(m.ctx)
-}
-
-// 关闭一个watcher, 所有的watcher在停止监视的时候必须调用它
-func (m *Manager) closeWatcher(w *Watcher) {
-	m.wg.Done()
+	return newWatcher(m.opts)
 }
