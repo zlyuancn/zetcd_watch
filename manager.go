@@ -34,7 +34,7 @@ type Manager struct {
 	// 是否运行中
 	run int32
 	// 重试等待时间
-	retry_wait_time time.Duration
+	retryWaitTime time.Duration
 	// 日志
 	log Loger
 }
@@ -46,10 +46,10 @@ func New(etcd_client *clientv3.Client, opts ...Option) *Manager {
 		ctx:    ctx,
 		cancel: cancel,
 
-		c:               etcd_client,
-		run:             1,
-		retry_wait_time: DefaultRetryWaitTime,
-		log:             zlog.DefaultLogger,
+		c:             etcd_client,
+		run:           1,
+		retryWaitTime: DefaultRetryWaitTime,
+		log:           zlog.DefaultLogger,
 	}
 
 	for _, o := range opts {

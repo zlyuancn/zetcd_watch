@@ -31,7 +31,7 @@ type Kv struct {
 
 func makeKvFromRaw(kv *mvccpb.KeyValue) *Kv {
 	return &Kv{
-		Value:         zstr.String(kv.Value),
+		Value:          zstr.String(kv.Value),
 		Key:            string(kv.Key),
 		Version:        kv.Version,
 		CreateRevision: kv.CreateRevision,
