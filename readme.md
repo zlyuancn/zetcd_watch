@@ -26,9 +26,9 @@ func main() {
     w := manage.NewWatcher()                           // 创建一个监视器
 
     // 开始监视
-    err := w.Start("", func(data *zetcd_watch.Data) {
-        fmt.Printf("[%s]%s: %s\n", data.Type(), data.Key, data.Val())
-    }, clientv3.WithPrefix())
+	err := w.Start("", func(data *zetcd_watch.Data) {
+		fmt.Printf("[%s] %s = %s \n", data.Type, data.Key, data.Value)
+	}, clientv3.WithPrefix())
     if err != nil {
         fmt.Println("错误", err)
     }

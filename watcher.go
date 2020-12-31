@@ -134,10 +134,12 @@ func (m *Watcher) watch(ctx context.Context, key string, fn ObserverFunc, opts .
         }
         for _, e := range v.Events {
             data := newData(e)
-            if data.ModRevision > m.record_ver[data.Key] {
-                m.record_ver[data.Key] = data.ModRevision
-                fn(data)
+            if data.ModRevision == m.record_ver[data.Key] {
+                continue // 过滤掉重复的
             }
+
+            m.record_ver[data.Key] = data.ModRevision
+            fn(data)
         }
     }
     return nil
