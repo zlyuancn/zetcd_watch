@@ -21,20 +21,13 @@ import (
 )
 
 func main() {
-    c, _ := clientv3.NewFromURL("192.168.28.238:5460") // 连接
-    manage := zetcd_watch.New(c)                       // 创建一个管理器
-    w := manage.NewWatcher()                           // 创建一个监视器
-
-    // 开始监视
-	err := w.Watch("", func(data *zetcd_watch.Data) {
+    client, _ := clientv3.NewFromURL("127.0.0.1:2379")
+	_ = zetcd_watch.NewWatcher(client).Watch("/a", func(data *zetcd_watch.Data) {
 		fmt.Printf("[%s] %s = %s \n", data.Type, data.Key, data.Value)
-	}, clientv3.WithPrefix())
-    if err != nil {
-        fmt.Println("错误", err)
-    }
+	})
 }
 ```
 
-# 说明
+# 可靠
 
 ## 此模块经过不停的断网、关闭etcd服务等严格测试, 能正常准确的监视key的每一次变动

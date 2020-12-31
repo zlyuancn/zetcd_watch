@@ -42,6 +42,13 @@ func newWatcher(opts *options) *Watcher {
 	return w
 }
 
+// 创建一个观察者
+func NewWatcher(etcdClient *clientv3.Client, opts ...Option) *Watcher {
+	opt := newOptions(etcdClient)
+	opt.apply(opts...)
+	return newWatcher(opt)
+}
+
 // 开始监视
 // 如果你需要监视一个key前缀, 请设置 clientv3.WithPrefix() 选项
 // 如果你想要知道key在改变之前的数据, 请设置 clientv3.WithPrevKV() 选项
