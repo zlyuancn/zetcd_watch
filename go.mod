@@ -24,7 +24,7 @@ require (
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	github.com/zlyuancn/zlog2 v0.0.0-20191224092435-704870d6832e
-	github.com/zlyuancn/zstr v0.0.0-20200415022544-1e66cf5265bb
+	github.com/zlyuancn/zstr v0.0.0-20201226090333-7f2456b4534b
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.etcd.io/etcd v3.3.18+incompatible
 	go.uber.org/atomic v1.5.1 // indirect

@@ -17,7 +17,7 @@ import (
 type Data struct {
     t EventType
     // 值
-    *zstr.String
+    zstr.String
     // 键
     Key string
     // 当前版本
@@ -33,7 +33,7 @@ type Data struct {
 func newData(e *clientv3.Event) *Data {
     kv := e.Kv
     m := &Data{
-        String:         zstr.New(string(kv.Value)),
+        String:         zstr.String(kv.Value),
         Key:            string(kv.Key),
         Version:        kv.Version,
         CreateRevision: kv.CreateRevision,

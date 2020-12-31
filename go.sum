@@ -141,8 +141,8 @@ github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 h1:eY9dn8+vbi4tKz5
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/zlyuancn/zlog2 v0.0.0-20191224092435-704870d6832e h1:W3O4UEj59qYR/w9wJ+be3bYVb1L+JsdbdctbRcJ6O/M=
 github.com/zlyuancn/zlog2 v0.0.0-20191224092435-704870d6832e/go.mod h1:LivyG2Lsgp7s3dGlGDjptGcAhOSr+f+cIWfU/SPeWkI=
-github.com/zlyuancn/zstr v0.0.0-20200415022544-1e66cf5265bb h1:Pgr0GpA7KJbwkADtvfczxpSpBcX4eKt4yVn8L4jijq0=
-github.com/zlyuancn/zstr v0.0.0-20200415022544-1e66cf5265bb/go.mod h1:gcWCwemINH4jJeg+sXWMf45IAWc/fSn4rZ38eW2zqI8=
+github.com/zlyuancn/zstr v0.0.0-20201226090333-7f2456b4534b h1:gRSG9+NHaVxFcCurHCmgpN1zwqE8elzGtIfKcKNuxBg=
+github.com/zlyuancn/zstr v0.0.0-20201226090333-7f2456b4534b/go.mod h1:gcWCwemINH4jJeg+sXWMf45IAWc/fSn4rZ38eW2zqI8=
 go.etcd.io/bbolt v1.3.3 h1:MUGmc65QhB3pIlaQ5bB4LwqSj6GIonVJXpZiaKNyaKk=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v3.3.18+incompatible h1:5aomL5mqoKHxw6NG+oYgsowk8tU8aOalo2IdZxdWHkw=
