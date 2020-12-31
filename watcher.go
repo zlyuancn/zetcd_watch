@@ -56,8 +56,8 @@ func (w *Watcher) Watch(key string, fn ObserverFunc, opts ...clientv3.OpOption) 
 
 	w.recordVer = make(map[string]int64)
 	w.wg.Add(1)
-	ctx, cancel := context.WithCancel(w.baseCtx)
 
+	ctx, cancel := context.WithCancel(w.ctx)
 	go func() {
 		select {
 		case <-ctx.Done():
