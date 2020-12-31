@@ -11,7 +11,7 @@ package zetcd_watch
 import (
     "time"
 
-    "github.com/zlyuancn/zlog2"
+    "github.com/zlyuancn/zlog"
 )
 
 type Option func(m *Manager)
@@ -30,7 +30,7 @@ func WithRetryWaitTime(t time.Duration) Option {
 func WithLogger(log Loger) Option {
     return func(m *Manager) {
         if log == nil {
-            log = zlog2.DefaultLogger
+            log = zlog.DefaultLogger
         }
         m.log = log
     }
