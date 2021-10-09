@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-    client, _ := clientv3.NewFromURL("127.0.0.1:2379")
+	client, _ := clientv3.NewFromURL("127.0.0.1:2379")
 	_ = zetcd_watch.NewWatcher(client).Watch("/a", func(data *zetcd_watch.Data) {
 		fmt.Printf("[%s] %s = %s \n", data.Type, data.Key, data.Value)
 	})
@@ -30,4 +30,4 @@ func main() {
 
 # 可靠
 
-## 此模块经过不停的断网、关闭etcd服务等严格测试, 能正常准确的监视key的每一次变动
+## 此模块经过不停的断网、关闭etcd服务等严格测试, 能精确的监视key的每一次变动, 保证每次变动时精确触发一次回调
