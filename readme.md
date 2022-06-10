@@ -16,7 +16,7 @@ package main
 
 import (
     "fmt"
-    "go.etcd.io/etcd/clientv3"
+    "go.etcd.io/etcd/client/v3"
     "github.com/zlyuancn/zetcd_watch"
 )
 
